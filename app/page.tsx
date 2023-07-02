@@ -1,5 +1,5 @@
-import Intro from '@/components/intro'
-import Table from '@/components/table'
+import Intro from "@/components/intro";
+import Table from "@/components/table";
 
 export default function Home() {
   return (
@@ -7,5 +7,5 @@ export default function Home() {
       <Intro />
       <Table />
     </main>
-  )
+  );
 }

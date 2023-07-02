@@ -26,7 +26,7 @@ export default function Table() {
     { title: "Large Straight", score: null, guess: 0 },
     { title: "Chance", score: null, guess: 0 },
     { title: "Yahtzee", score: null, guess: 0 },
-    { title: "Yahtzee 보너스", score: null, guess: 0 }
+    { title: "Yahtzee 보너스", score: null, guess: 0 },
   ]);
 
   const countDiceEyes = (eyes: number) => {
@@ -37,7 +37,7 @@ export default function Table() {
       return acc;
     }, 0);
     return val;
-  }
+  };
 
   useEffect(() => {
     setTableRows((prevItems) => {
@@ -71,76 +71,70 @@ export default function Table() {
           updatedValue = countDiceEyes(6);
           newItems[index].guess = updatedValue * 6;
         } else if (item.title === "Three-Of-A-Kind") {
-
         } else if (item.title === "Four-Of-A-Kind") {
-
         } else if (item.title === "Full House") {
-
         } else if (item.title === "Small Straight") {
-
         } else if (item.title === "Large Straight") {
-
         } else if (item.title === "Chance") {
-
         } else if (item.title === "Yahtzee") {
-
         } else if (item.title === "Yahtzee 보너스") {
-
         }
       });
       return newItems;
     });
-  }, [diceVal])
+  }, [diceVal]);
 
-  return <div className={clsx('mt-10', 'w-full', 'border', 'md:px-20')}>
-    <div className={clsx('flex')}>
-      {diceVal.map((item, index) => <div className="m-2" key={index}>{item}</div>)}
-      <div onClick={() =>
-        setDiceVal((prevItems) => {
-          const newItems = [...prevItems];
-          prevItems.map((item, index) => newItems[index] = Math.floor(Math.random() * 6) + 1)
-          return newItems;
-        })
-      }>
-        Roll
-      </div>
-    </div>
-    {
-      tableRows.map((item, index) => (
-        <div key={item.title} className={clsx('flex', 'w-full', 'text-center', 'border-b', 'p-3')}>
-          <div className={clsx('w-2/5')}>
-            {item.title}
+  return (
+    <div className={clsx("mt-10", "w-full", "border", "md:px-20")}>
+      <div className={clsx("flex")}>
+        {diceVal.map((item, index) => (
+          <div className="m-2" key={index}>
+            {item}
           </div>
+        ))}
+        <div
+          onClick={() =>
+            setDiceVal((prevItems) => {
+              const newItems = [...prevItems];
+              prevItems.map(
+                (item, index) =>
+                  (newItems[index] = Math.floor(Math.random() * 6) + 1)
+              );
+              return newItems;
+            })
+          }
+        >
+          Roll
+        </div>
+      </div>
+      {tableRows.map((item, index) => (
+        <div
+          key={item.title}
+          className={clsx("flex", "w-full", "text-center", "border-b", "p-3")}
+        >
+          <div className={clsx("w-2/5")}>{item.title}</div>
 
           {/* 스코어 */}
-          <div className={clsx('w-3/5')}>
-            {
-              item.score !== null ?
-                <div className={clsx()}>
-                  {item.score}
-                </div>
-                : <div
-                  className={clsx('text-gray-300', "cursor-pointer")}
-                  onClick={() => {
-                    setTableRows((prevItems) => {
-                      const newItems = [...prevItems];
-                      newItems[index].score = item.guess;
-                      return newItems;
-                    });
-                  }}
-                >
-                  {item.guess}
-                </div>
-            }
+          <div className={clsx("w-3/5")}>
+            {item.score !== null ? (
+              <div className={clsx()}>{item.score}</div>
+            ) : (
+              <div
+                className={clsx("text-gray-300", "cursor-pointer")}
+                onClick={() => {
+                  setTableRows((prevItems) => {
+                    const newItems = [...prevItems];
+                    newItems[index].score = item.guess;
+                    return newItems;
+                  });
+                }}
+              >
+                {item.guess}
+              </div>
+            )}
           </div>
         </div>
-      ))
-    }
-  </div>
+      ))}
+    </div>
+  );
 }
-
-
-
-
-
-

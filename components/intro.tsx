@@ -2,51 +2,84 @@
 
 import clsx from "clsx";
 import Dice from "./dice";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateDiceValues, incrementRollCount } from "@/redux/store";
+
+interface DiceValuesState {
+  diceValues: {
+    diceVal: number;
+    rerollDice: boolean;
+  }[];
+}
 
 export default function Intro() {
-  const [diceValues, setDiceValues] = useState([
-    { diceVal: 1, rerollDice: true },
-    { diceVal: 3, rerollDice: true },
-    { diceVal: 4, rerollDice: true },
-    { diceVal: 5, rerollDice: true },
-    { diceVal: 6, rerollDice: true },
-  ]);
+  const dispatch = useDispatch();
+  const diceValues = useSelector(
+    (state) => (state as DiceValuesState).diceValues
+  );
+  const rollCount = useSelector(
+    (state) => (state as { rollCount: number }).rollCount
+  );
+  const score = useSelector((state) => (state as { score: number }).score);
+  const handleRoll = () => {
+    dispatch(incrementRollCount());
+  };
 
   function Roll() {
-    setDiceValues((prevItems) => {
-      const newItems = [...prevItems];
-      for (let i = 0; i < newItems.length; i++) {
-        if (newItems[i].rerollDice === true) {
-          newItems[i].diceVal = Math.floor(Math.random() * 6) + 1;
-          newItems[i].rerollDice = true;
+    if (rollCount < 2) {
+      const newDiceValues = [...diceValues].map((item) => {
+        if (item.rerollDice === true) {
+          return {
+            ...item,
+            diceVal: Math.floor(Math.random() * 6) + 1,
+          };
         }
-      }
-      return newItems;
-    });
+        return item;
+      });
+      handleRoll();
+      dispatch(updateDiceValues(newDiceValues));
+    }
   }
 
   return (
-    <div>
-      <div
+    <div className={clsx("w-full", "md:w-[500px]")}>
+      <header
         className={clsx(
-          "gird",
-          "gap-4",
-          "flex",
-          "text-center",
-          "md:text-lg",
-          "text-xs"
+          "p-3",
+          "mb-8",
+          "font-bold",
+          "border-b-[1px]",
+          "border-[#e8e8e8]"
         )}
       >
-        {diceValues.map((item, index) => (
-          <Dice
-            key={index}
-            number={item.diceVal}
-            rerollDice={item.rerollDice}
-            index={index}
-            setDiceValues={setDiceValues}
-          />
-        ))}
+        Yahtzee
+      </header>
+      <div
+        className={clsx(
+          "flex",
+          "justify-between",
+          "text-center",
+          "md:text-lg",
+          "text-xs",
+          "w-full"
+        )}
+      >
+        {diceValues.map(
+          (item: { diceVal: number; rerollDice: boolean }, index: number) => (
+            <Dice
+              number={item.diceVal}
+              rerollDice={item.rerollDice}
+              index={index}
+            />
+          )
+        )}
+      </div>
+
+      <div className={clsx("w-full", "h-2", "bg-gray-300", "mt-5")}>
+        <div
+          className={clsx("h-2", "bg-green-300")}
+          style={{ width: `${Math.min(score / 2, 100)}%` }}
+        />
       </div>
 
       <div
@@ -57,12 +90,14 @@ export default function Intro() {
           "text-white",
           "my-5",
           "rounded-lg",
-          "cursor-pointer"
+          "cursor-pointer",
+          rollCount === 2 && "!cursor-not-allowed !bg-gray-400"
         )}
         style={{ boxShadow: "rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px" }}
         onClick={Roll}
       >
-        Roll again
+        Roll againㅤ
+        {rollCount + 1} / 3
       </div>
     </div>
   );

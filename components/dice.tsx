@@ -1,11 +1,12 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
+import { updateDiceValues } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
 
 interface IDiceprops {
   number: number;
   rerollDice?: boolean;
   index?: number;
-  setDiceValues?: (state: { diceVal: number; rerollDice: boolean }[]) => void;
 }
 
 interface IDiceContainerprops {
@@ -13,22 +14,27 @@ interface IDiceContainerprops {
   children: ReactNode;
 }
 
-export default function Dice({
-  number,
-  rerollDice,
-  index,
-  setDiceValues,
-}: IDiceprops) {
+interface DiceValuesState {
+  diceValues: {
+    diceVal: number;
+    rerollDice: boolean;
+  }[];
+}
+
+export default function Dice({ number, rerollDice, index }: IDiceprops) {
+  const dispatch = useDispatch();
+  const diceValues = useSelector(
+    (state) => (state as DiceValuesState).diceValues
+  );
+
   const updateDice = () => {
-    if (setDiceValues && index != undefined) {
-      setDiceValues((prevItems) => {
-        const newItems = [...prevItems];
-        newItems[index] = {
-          diceVal: newItems[index].diceVal,
-          rerollDice: !newItems[index].rerollDice,
-        };
-        return newItems;
-      });
+    if (index != undefined) {
+      const newDiceValues = [...diceValues];
+      newDiceValues[index] = {
+        diceVal: newDiceValues[index].diceVal,
+        rerollDice: !newDiceValues[index].rerollDice,
+      };
+      dispatch(updateDiceValues(newDiceValues));
     }
   };
 
@@ -37,9 +43,9 @@ export default function Dice({
       <div
         className={clsx(
           "md:h-24",
-          "h-14",
+          "h-[60px]",
           "md:w-24",
-          "w-14",
+          "w-[60px]",
           "border",
           "border-black",
           "select-none",
